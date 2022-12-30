@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -35,7 +36,17 @@ public class TransactionService {
 
     public String issueBook(int cardId, int bookId) throws Exception {
         //check whether bookId and cardId already exist
+        if (cardRepository5.existsById(cardId) && cardRepository5.getOne(cardId).getCardStatus().toString() == "DEACTIVATED")
+        {
+
+            throw new Exception("Book is either unavailable or not present");
+
+        }
         //conditions required for successful transaction of issue book:
+        if (bookRepository5.existsById(bookId) && bookRepository5.getOne(bookId).isAvailable()==false)
+        {
+            throw new Exception("Book is either unavailable or not present");
+        }
         //1. book is present and available
         // If it fails: throw new Exception("Book is either unavailable or not present");
         //2. card is present and activated
@@ -46,7 +57,7 @@ public class TransactionService {
 
         //Note that the error message should match exactly in all cases
 
-       return null; //return transactionId instead
+        return null; //return transactionId instead
     }
 
     public Transaction returnBook(int cardId, int bookId) throws Exception{
